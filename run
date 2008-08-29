@@ -1,1 +1,109 @@
-java -jar visualizer.jar
+#!/bin/sh
+
+help ()
+{
+	echo "Usage: run [-h, -s] COMMAND"
+	echo "Command may be: compile, jar, run, or all"
+	echo "Examples:"
+	echo "  run all			Would run compile, jar and run in the correct order"
+	echo "  run -s jar			Would run only jar and nothing else"
+	echo "  run --single compile		Would run only compile and nothing else"
+	echo "  run jar			Would run jar and and any of it's dependencies in the correct order"
+	echo ""
+	echo "Flags:"
+	echo ""
+	echo "  -d				Print Dependencies"
+	echo "  --help      			This help"
+	echo "  -s, --single    		Run only this command and non of it's dependencies"
+	exit 1
+}
+
+compile ()
+{
+	#Check if the build directory exists. If not create it.
+	if [ -d "build" ]; then
+		echo "Build directory exists"
+	else
+		echo "Build directory does not exist"
+		echo "Create build directory"
+		mkdir build
+	fi
+	#Compile all of the source files into the build directory
+	javac -d build/ src/visualizer/*.java
+}
+
+jar ()
+{
+	echo "Copying class files to current location"
+	cp -R build/visualizer .
+	echo "Creating jar file"
+	#jar cmf manifest visualizer.jar visualizer/* resource/*
+	echo "Deleting copied class files"
+	rm -r visualizer
+}
+
+run ()
+{
+	exec java -jar visualizer.jar
+}
+
+depend ()
+{
+	echo "Dependencies In Order:"
+	echo "All"
+	echo "  Run"
+	echo "    Jar"
+	echo "      Compile"
+	exit 1
+}
+
+
+command="help"
+
+if [ "$1" = "-s" ]; then
+	if [ ! "$2" = "" ]; then
+		command="$2"
+	else
+		help
+	fi
+elif [ "$1" = "--single" ]; then
+        if [ ! "$2" = "" ]; then
+		command="$2"
+	else
+		help
+        fi
+elif [ "$1" = "--help" ]; then
+	help
+elif [ "$1" = "-d" ]; then
+	depend
+else
+	command="$1"
+fi
+
+if [ "$command" = "compile" ]; then
+	#Compile has no dependencies so its not worth checking
+	compile
+elif [ "$command" = "jar" ]; then
+	if [ "$1" = "jar" ]; then
+		#Execute the dependencies
+		compile
+	fi
+	#Execute me
+	jar
+	echo "Returned"
+elif [ "$command" = "run" ]; then
+	if [ "$1" = "run" ]; then
+		#Execute the dependencies
+		compile
+		jar
+	fi
+	#Execute me
+	run
+elif [ "$command" = "all" ]; then
+	#Execute all regardless of the single flag
+	compile
+	jar
+	run
+else
+	help
+fi

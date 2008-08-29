@@ -1,3 +1,0 @@
-cp -R build/visualizer .
-jar cmf manifest visualizer.jar visualizer/* resource/*
-rm -r visualizer
