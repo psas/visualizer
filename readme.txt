@@ -5,7 +5,7 @@ From:
   Pro Java 6 3D Game Development
   Andrew Davison
   Apress, April 2007
-  ISBN: 1590598172 
+  ISBN: 1590598172
   http://www.apress.com/book/bookDisplay.html?bID=10256
   Web Site for the book: http://fivedots.coe.psu.ac.th/~ad/jg2
 
@@ -30,7 +30,7 @@ Files and directories here:
 
   * ObjView3D.java, WrapObjView3D.java, TexPlane.java
     ModelLoader.java, GroundShape.java, KeyBehavior.java
-    CheckerFloor.java, ColouredTiles.java   
+    CheckerFloor.java, ColouredTiles.java
        // 8 Java files
 
   * images/	// a directory holding 5 textures for the GroundShapes
@@ -51,10 +51,10 @@ Requirements:
 * Java 3D 1.4.0 (or later) from https://java3d.dev.java.net/
 
 ==================================
-Compilation: 
+Compilation:
   $ javac *.java
 
-Execution: 
+Execution:
   $ java ObjView3D
      /* you can move the camera using the arrow keys, optionally
         combined with the <alt> key. */
