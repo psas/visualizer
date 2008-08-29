@@ -1,0 +1,9 @@
+if [ -d "build" ]; then
+	echo "Build directory exists"
+else
+	echo "Build directory does not exist"
+	echo "Create build directory"
+	mkdir build
+fi
+
+javac -d build/ src/visualizer/*.java
