@@ -38,25 +38,17 @@ public class ModelLoader
 
 	private BranchGroup loadModel(String fnm)
 	{
+
 		File file = new java.io.File(fnm);
-		if(!file.exists())
-		{
-			return null;
-		}
-
 		URL url = null;
-		try
-		{
-			url = file.toURI().toURL();
-		}
-		catch(Exception e)
-		{
-			return null;
-		}
-
 		Scene scene = null;
 		try
 		{
+			if(!file.exists())
+			{
+				throw new FileNotFoundException(fnm);
+			}
+			url = file.toURI().toURL();
 			scene = objFileloader.load(url);
 		}
 		catch(Exception e)
@@ -65,10 +57,7 @@ public class ModelLoader
 			return null;
 		}
 
-		if(scene != null)
-			return scene.getSceneGroup();
-		else
-			return null;
+		return scene.getSceneGroup();
 	}
 
 	private double getScaling(BranchGroup modelBG)
