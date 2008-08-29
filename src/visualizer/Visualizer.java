@@ -3,14 +3,14 @@ package visualizer;
 import javax.swing.*;
 import java.awt.*;
 
-public class ObjView3D extends JFrame
+public class Visualizer extends JFrame
 {
-	public ObjView3D()
+	public Visualizer()
 	{
 		super("ObjView3D");
 		Container c = getContentPane();
 		c.setLayout(new BorderLayout());
-		WrapObjView3D w3d = new WrapObjView3D();
+		RocketPanel w3d = new RocketPanel();
 		c.add(w3d, BorderLayout.CENTER);
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -22,7 +22,7 @@ public class ObjView3D extends JFrame
 
 	public static void main(String[] args)
 	{
-		new ObjView3D();
+		new Visualizer();
 	}
 
 }

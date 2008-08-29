@@ -4,16 +4,16 @@ import javax.vecmath.*;
 import javax.media.j3d.*;
 import com.sun.j3d.utils.image.*;
 
-public class GroundShape extends OrientedShape3D
+public class GroundCover extends OrientedShape3D
 {
 	private static final int NUM_VERTS = 4;
 
-	public GroundShape(String fnm)
+	public GroundCover(String fnm)
 	{
 		this(fnm, 1);
 	}
 
-	public GroundShape(String fnm, float screenSize)
+	public GroundCover(String fnm, float screenSize)
 	{
 		setAlignmentAxis(0.0f, 1.0f, 0.0f);
 

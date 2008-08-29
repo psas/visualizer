@@ -1,7 +1,6 @@
 package visualizer;
 
 import java.awt.*;
-import java.net.*;
 
 import javax.media.j3d.*;
 import javax.swing.*;
@@ -11,7 +10,7 @@ import com.sun.j3d.utils.geometry.*;
 import com.sun.j3d.utils.image.*;
 import com.sun.j3d.utils.universe.*;
 
-public class WrapObjView3D extends JPanel
+public class RocketPanel extends JPanel
 {
 	private static final String RESOURCE_DIR = "resource/";
 	private final BranchGroup sceneBG;
@@ -19,7 +18,7 @@ public class WrapObjView3D extends JPanel
 	private final TransformGroup tgroup = new TransformGroup();
 	private TransformGroup camera = new TransformGroup();
 
-	public WrapObjView3D()
+	public RocketPanel()
 	{
 		sceneBG = new BranchGroup();
 		bounds = new BoundingSphere(new Point3d(0, 0, 0), 1000);
@@ -65,22 +64,22 @@ public class WrapObjView3D extends JPanel
 		Transform3D t3d = new Transform3D();
 		t3d.set(new Vector3d(4, 0, 0));
 		TransformGroup tg1 = new TransformGroup(t3d);
-		tg1.addChild(new GroundShape(RESOURCE_DIR + "tree1.gif", 3));
+		tg1.addChild(new GroundCover(RESOURCE_DIR + "tree1.gif", 3));
 		sceneBG.addChild(tg1);
 
 		t3d.set(new Vector3d(-3, 0, 0));
 		TransformGroup tg2 = new TransformGroup(t3d);
-		tg2.addChild(new GroundShape(RESOURCE_DIR + "tree2.gif", 2));
+		tg2.addChild(new GroundCover(RESOURCE_DIR + "tree2.gif", 2));
 		sceneBG.addChild(tg2);
 
 		t3d.set(new Vector3d(2, 0, -6));
 		TransformGroup tg3 = new TransformGroup(t3d);
-		tg3.addChild(new GroundShape(RESOURCE_DIR + "tree4.gif", 3));
+		tg3.addChild(new GroundCover(RESOURCE_DIR + "tree4.gif", 3));
 		sceneBG.addChild(tg3);
 
 		t3d.set(new Vector3d(-1, 0, -4));
 		TransformGroup tg4 = new TransformGroup(t3d);
-		tg4.addChild(new GroundShape(RESOURCE_DIR + "cactus.gif"));
+		tg4.addChild(new GroundCover(RESOURCE_DIR + "cactus.gif"));
 		sceneBG.addChild(tg4);
 	}
 
