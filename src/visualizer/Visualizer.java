@@ -10,14 +10,14 @@ public class Visualizer extends JFrame
 		super("ObjView3D");
 		Container c = getContentPane();
 		c.setLayout(new BorderLayout());
-		RocketPanel w3d = new RocketPanel();
-		c.add(w3d, BorderLayout.CENTER);
+		RocketPanel panel = new RocketPanel();
+		c.add(panel, BorderLayout.CENTER);
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		pack();
 		setResizable(false);
 		setVisible(true);
-		w3d.moveModel();
+		panel.moveModel();
 	}
 
 	public static void main(String[] args)
