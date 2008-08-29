@@ -1,14 +1,8 @@
 Working on:
 
 
-
 Need to:
-Change all script to:
-1. take parameters and the run the right script. This also will delete the individual scripts. all, run, jar, compile
-2. each script depends on the ones before it.
-3. take a option --single which only runs the one you give it.
 
-Remove all trailing whitespace
 
 Ideas:
 Add key movement. You can use the guy's code for this.
