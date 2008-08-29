@@ -56,7 +56,7 @@ public class RocketPanel extends JPanel
 		addBackground("clouds.jpg");
 		addGroundCover();
 
-		sceneBG.addChild(new CheckerFloor().getBG());
+		sceneBG.addChild(new GroundFloor());
 	}
 
 	private void addGroundCover()
