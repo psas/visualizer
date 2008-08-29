@@ -1,6 +1,7 @@
 package visualizer;
 
 import java.awt.*;
+import java.net.*;
 
 import javax.media.j3d.*;
 import javax.swing.*;
@@ -12,6 +13,7 @@ import com.sun.j3d.utils.universe.*;
 
 public class WrapObjView3D extends JPanel
 {
+	private static final String RESOURCE_DIR = "resource/";
 	private final BranchGroup sceneBG;
 	private final BoundingSphere bounds;
 	private final TransformGroup tgroup = new TransformGroup();
@@ -61,31 +63,30 @@ public class WrapObjView3D extends JPanel
 	private void addGroundCover()
 	{
 		Transform3D t3d = new Transform3D();
-
 		t3d.set(new Vector3d(4, 0, 0));
 		TransformGroup tg1 = new TransformGroup(t3d);
-		tg1.addChild(new GroundShape("tree1.gif", 3));
+		tg1.addChild(new GroundShape(RESOURCE_DIR + "tree1.gif", 3));
 		sceneBG.addChild(tg1);
 
 		t3d.set(new Vector3d(-3, 0, 0));
 		TransformGroup tg2 = new TransformGroup(t3d);
-		tg2.addChild(new GroundShape("tree2.gif", 2));
+		tg2.addChild(new GroundShape(RESOURCE_DIR + "tree2.gif", 2));
 		sceneBG.addChild(tg2);
 
 		t3d.set(new Vector3d(2, 0, -6));
 		TransformGroup tg3 = new TransformGroup(t3d);
-		tg3.addChild(new GroundShape("tree4.gif", 3));
+		tg3.addChild(new GroundShape(RESOURCE_DIR + "tree4.gif", 3));
 		sceneBG.addChild(tg3);
 
 		t3d.set(new Vector3d(-1, 0, -4));
 		TransformGroup tg4 = new TransformGroup(t3d);
-		tg4.addChild(new GroundShape("cactus.gif"));
+		tg4.addChild(new GroundShape(RESOURCE_DIR + "cactus.gif"));
 		sceneBG.addChild(tg4);
 	}
 
 	private void addBackground(String fnm)
 	{
-		Texture2D tex = loadTexture(fnm);
+		Texture2D tex = loadTexture(RESOURCE_DIR + fnm);
 
 		Sphere sphere = new Sphere(1.0f, Sphere.GENERATE_NORMALS_INWARD
 				| Sphere.GENERATE_TEXTURE_COORDS, 8);
@@ -174,7 +175,7 @@ public class WrapObjView3D extends JPanel
 
 		t3d.set(new Vector3d(0, 0, 0));
 		TransformGroup tg4 = new TransformGroup(t3d);
-		tg4.addChild(ml.getModel("tintin_rocket.obj"));
+		tg4.addChild(ml.getModel(RESOURCE_DIR + "tintin_rocket.obj"));
 		tgroup.addChild(tg4);
 		sceneBG.addChild(tgroup);
 	}
