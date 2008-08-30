@@ -76,6 +76,8 @@ elif [ "$1" = "--help" ]; then
 	help
 elif [ "$1" = "-d" ]; then
 	depend
+elif [ "$1" = "" ]; then
+	command="all"
 else
 	command="$1"
 fi
