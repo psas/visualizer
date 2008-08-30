@@ -1,4 +1,0 @@
-./run -s compile
-cp -R build/visualizer .
-jar cmf manifest visualizer.jar visualizer/* resource/*
-./run -s run

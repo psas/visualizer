@@ -32,12 +32,12 @@ compile ()
 	javac -d build/ src/visualizer/*.java
 }
 
-jar ()
+jaritup ()
 {
 	echo "Copying class files to current location"
 	cp -R build/visualizer .
 	echo "Creating jar file"
-	#jar cmf manifest visualizer.jar visualizer/* resource/*
+	jar cmf manifest visualizer.jar visualizer/* resource/*
 	echo "Deleting copied class files"
 	rm -r visualizer
 }
@@ -89,20 +89,20 @@ elif [ "$command" = "jar" ]; then
 		compile
 	fi
 	#Execute me
-	jar
+	jaritup
 	echo "Returned"
 elif [ "$command" = "run" ]; then
 	if [ "$1" = "run" ]; then
 		#Execute the dependencies
 		compile
-		jar
+		jaritup
 	fi
 	#Execute me
 	run
 elif [ "$command" = "all" ]; then
 	#Execute all regardless of the single flag
 	compile
-	jar
+	jaritup
 	run
 else
 	help
