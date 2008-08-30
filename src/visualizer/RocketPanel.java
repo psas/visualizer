@@ -26,7 +26,6 @@ public class RocketPanel extends JPanel
 		camera.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 		setLayout(new BorderLayout());
 		setOpaque(false);
-		setPreferredSize(new Dimension(1300, 1000));
 
 		GraphicsConfiguration config = SimpleUniverse
 				.getPreferredConfiguration();

@@ -15,8 +15,8 @@ public class Visualizer extends JFrame
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		pack();
-		setResizable(false);
 		setVisible(true);
+		setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
 		panel.moveModel();
 	}
 
