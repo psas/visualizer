@@ -38,24 +38,17 @@ public class RocketPanel extends JPanel
 
 		camera = su.getViewingPlatform().getViewPlatformTransform();
 
-		View view = su.getViewer().getView();
-		view
-				.setTransparencySortingPolicy(View.TRANSPARENCY_SORT_GEOMETRY);
+		su.getViewer().getView().setTransparencySortingPolicy(View.TRANSPARENCY_SORT_GEOMETRY);
 
-		createSceneGraph();
-
-		sceneBG.compile();
-		su.addBranchGraph(sceneBG);
-	}
-
-	private void createSceneGraph()
-	{
 		lightScene();
 		addModels();
 		addBackground("clouds.jpg");
 		addGroundCover();
 
 		sceneBG.addChild(new GroundFloor());
+
+		sceneBG.compile();
+		su.addBranchGraph(sceneBG);
 	}
 
 	private void addGroundCover()
@@ -152,13 +145,11 @@ public class RocketPanel extends JPanel
 		Vector3f light1Direction = new Vector3f(-1.0f, -1.0f, -1.0f);
 		Vector3f light2Direction = new Vector3f(1.0f, -1.0f, 1.0f);
 
-		DirectionalLight light1 = new DirectionalLight(white,
-				light1Direction);
+		DirectionalLight light1 = new DirectionalLight(white, light1Direction);
 		light1.setInfluencingBounds(bounds);
 		sceneBG.addChild(light1);
 
-		DirectionalLight light2 = new DirectionalLight(white,
-				light2Direction);
+		DirectionalLight light2 = new DirectionalLight(white, light2Direction);
 		light2.setInfluencingBounds(bounds);
 		sceneBG.addChild(light2);
 	}
