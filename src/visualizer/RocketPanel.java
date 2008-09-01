@@ -1,6 +1,7 @@
 package visualizer;
 
 import java.awt.*;
+import java.awt.event.*;
 
 import javax.media.j3d.*;
 import javax.swing.*;
@@ -27,6 +28,19 @@ public class RocketPanel extends JPanel
 		setLayout(new BorderLayout());
 		setOpaque(false);
 
+		AbstractAction launchAction = new AbstractAction()
+		{
+			public void actionPerformed(ActionEvent ae)
+			{
+				moveModel(true);
+			}
+		};
+		InputMap imap = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+		imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "launch");
+		ActionMap amap = getActionMap();
+		amap.put("launch", launchAction);
+
+
 		GraphicsConfiguration config = SimpleUniverse
 				.getPreferredConfiguration();
 		Canvas3D canvas3D = new Canvas3D(config);
@@ -49,6 +63,7 @@ public class RocketPanel extends JPanel
 
 		sceneBG.compile();
 		su.addBranchGraph(sceneBG);
+		moveModel(false);
 	}
 
 	private void addGroundCover()
@@ -108,11 +123,12 @@ public class RocketPanel extends JPanel
 		return texture;
 	}
 
-	public void moveModel()
+	private void moveModel(boolean launch)
 	{
 		Transform3D trans = new Transform3D();
 		float height = 0;
-		while(true)
+		int num = 1;
+		for(int i = 3; i > num; i++)
 		{
 			Transform3D t = new Transform3D();
 			trans.setTranslation(new Vector3d(0.0f, height += 0.1,
@@ -131,6 +147,8 @@ public class RocketPanel extends JPanel
 			{
 				e.printStackTrace();
 			}
+			if(!launch && i < 5)
+				num+=2;
 		}
 	}
 

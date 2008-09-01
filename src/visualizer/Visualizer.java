@@ -7,14 +7,12 @@ public class Visualizer extends JFrame
 	public Visualizer()
 	{
 		super("PSAS Rocket Visualizer");
-		RocketPanel panel = new RocketPanel();
-		add(panel);
+		add(new RocketPanel());
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		pack();
 		setVisible(true);
 		setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
-		panel.moveModel();
 	}
 
 	public static void main(String[] args)
