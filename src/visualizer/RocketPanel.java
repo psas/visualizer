@@ -28,41 +28,32 @@ public class RocketPanel extends JPanel
 		setLayout(new BorderLayout());
 		setOpaque(false);
 
-		AbstractAction launchAction = new AbstractAction()
-		{
+		InputMap imap = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+		imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "launch");
+		ActionMap amap = getActionMap();
+		amap.put("launch", new AbstractAction() {
 			public void actionPerformed(ActionEvent ae)
 			{
 				moveModel(true);
 			}
-		};
-		InputMap imap = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-		imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "launch");
-		ActionMap amap = getActionMap();
-		amap.put("launch", launchAction);
+		});
 
 
-		GraphicsConfiguration config = SimpleUniverse
-				.getPreferredConfiguration();
-		Canvas3D canvas3D = new Canvas3D(config);
+		Canvas3D canvas3D = new Canvas3D(SimpleUniverse.getPreferredConfiguration());
 		add("Center", canvas3D);
 		canvas3D.setFocusable(true);
 		canvas3D.requestFocus();
 
 		SimpleUniverse su = new SimpleUniverse(canvas3D);
-
+		su.getViewer().getView().setTransparencySortingPolicy(View.TRANSPARENCY_SORT_GEOMETRY);
 		camera = su.getViewingPlatform().getViewPlatformTransform();
 
-		su.getViewer().getView().setTransparencySortingPolicy(View.TRANSPARENCY_SORT_GEOMETRY);
-
 		lightScene();
-		addModels();
-		addBackground("clouds.jpg");
+		addModel();
+		addBackground();
 		addGroundCover();
-
 		sceneBG.addChild(new GroundFloor());
 
-		sceneBG.compile();
-		su.addBranchGraph(sceneBG);
 		moveModel(false);
 	}
 
@@ -90,14 +81,23 @@ public class RocketPanel extends JPanel
 		sceneBG.addChild(tg4);
 	}
 
-	private void addBackground(String fnm)
+	private void addBackground()
 	{
-		Texture2D tex = loadTexture(RESOURCE_DIR + fnm);
+		String fnm = RESOURCE_DIR + "clouds.jpg";
+		TextureLoader texLoader = new TextureLoader(fnm, null);
+		Texture2D texture = (Texture2D) texLoader.getTexture();
+		if(texture == null)
+			System.out.println("Cannot load texture from " + fnm);
+		else
+		{
+			System.out.println("Loaded texture from " + fnm);
+			texture.setEnable(true);
+		}
 
 		Sphere sphere = new Sphere(1.0f, Sphere.GENERATE_NORMALS_INWARD
 				| Sphere.GENERATE_TEXTURE_COORDS, 8);
 		Appearance backApp = sphere.getAppearance();
-		backApp.setTexture(tex);
+		backApp.setTexture(texture);
 
 		BranchGroup backBG = new BranchGroup();
 		backBG.addChild(sphere);
@@ -107,20 +107,6 @@ public class RocketPanel extends JPanel
 		bg.setGeometry(backBG);
 
 		sceneBG.addChild(bg);
-	}
-
-	private Texture2D loadTexture(String fn)
-	{
-		TextureLoader texLoader = new TextureLoader(fn, null);
-		Texture2D texture = (Texture2D) texLoader.getTexture();
-		if(texture == null)
-			System.out.println("Cannot load texture from " + fn);
-		else
-		{
-			System.out.println("Loaded texture from " + fn);
-			texture.setEnable(true);
-		}
-		return texture;
 	}
 
 	private void moveModel(boolean launch)
@@ -172,7 +158,7 @@ public class RocketPanel extends JPanel
 		sceneBG.addChild(light2);
 	}
 
-	private void addModels()
+	private void addModel()
 	{
 		ModelLoader ml = new ModelLoader();
 
