@@ -54,6 +54,7 @@ public class RocketPanel extends JPanel
 		addGroundCover();
 		sceneBG.addChild(new GroundFloor());
 
+		su.addBranchGraph(sceneBG);
 		moveModel(false);
 	}
 
