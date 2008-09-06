@@ -61,7 +61,7 @@ public class RocketPanel extends JPanel
 	private void addGroundCover()
 	{
 		Transform3D t3d = new Transform3D();
-		t3d.set(new Vector3d(4, 0, 0));
+		t3d.set(new Vector3d(19, 0, -4));
 		TransformGroup tg1 = new TransformGroup(t3d);
 		tg1.addChild(new GroundCover(RESOURCE_DIR + "tree1.gif", 3));
 		sceneBG.addChild(tg1);
@@ -114,16 +114,33 @@ public class RocketPanel extends JPanel
 	{
 		Transform3D trans = new Transform3D();
 		float height = 0;
+		float width = 0;
+		boolean apogee = false;
 		int num = 1;
 		for(int i = 3; i > num; i++)
 		{
+			if(height > 10) {
+				apogee = true;
+				System.out.println("APOGEE APOGEE APOGEE APOGEE APOGEE");
+			}
+			if(apogee) {
+				height -= 0.1;
+				width += 0.1;
+			}
+			else {
+				height += 0.1;
+				width += 0.1;
+			}
+			if(apogee)
+				if(height < 0.1)
+					break;
 			Transform3D t = new Transform3D();
-			trans.setTranslation(new Vector3d(0.0f, height += 0.1,
+			trans.setTranslation(new Vector3d(width, height,
 					15.0f));
 			t.mul(trans);
 			camera.setTransform(t);
 			Transform3D objectTrans = new Transform3D();
-			objectTrans.setTranslation(new Vector3d(0.0f, height,
+			objectTrans.setTranslation(new Vector3d(width, height,
 					0.0f));
 			tgroup.setTransform(objectTrans);
 			try
