@@ -44,7 +44,7 @@ jaritup ()
 
 run ()
 {
-	exec java -jar visualizer.jar
+	for i in $(seq 0 1000) ; do echo 0,$i,0 ; done | java -jar visualizer.jar
 }
 
 depend ()

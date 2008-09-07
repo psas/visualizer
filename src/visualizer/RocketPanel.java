@@ -2,6 +2,7 @@ package visualizer;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
 
 import javax.media.j3d.*;
 import javax.swing.*;
@@ -34,7 +35,11 @@ public class RocketPanel extends JPanel
 		amap.put("launch", new AbstractAction() {
 			public void actionPerformed(ActionEvent ae)
 			{
-				moveModel(true);
+				try {
+					moveModel(true);
+				} catch(IOException e) {
+					e.printStackTrace();
+				}
 			}
 		});
 
@@ -55,7 +60,11 @@ public class RocketPanel extends JPanel
 		sceneBG.addChild(new GroundFloor());
 
 		su.addBranchGraph(sceneBG);
-		moveModel(false);
+		try {
+			moveModel(false);
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void addGroundCover()
@@ -110,49 +119,52 @@ public class RocketPanel extends JPanel
 		sceneBG.addChild(bg);
 	}
 
-	private void moveModel(boolean launch)
+	private void moveModel(boolean launch) throws IOException
 	{
 		Transform3D trans = new Transform3D();
-		float height = 0;
-		float width = 0;
-		boolean apogee = false;
-		int num = 1;
-		for(int i = 3; i > num; i++)
+		float x = 0;
+		float y = 0;
+		float z = 0;
+		String s = "";
+		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+		if(launch)
 		{
-			if(height > 10) {
-				apogee = true;
-				System.out.println("APOGEE APOGEE APOGEE APOGEE APOGEE");
-			}
-			if(apogee) {
-				height -= 0.1;
-				width += 0.1;
-			}
-			else {
-				height += 0.1;
-				width += 0.1;
-			}
-			if(apogee)
-				if(height < 0.1)
-					break;
-			Transform3D t = new Transform3D();
-			trans.setTranslation(new Vector3d(width, height,
-					15.0f));
-			t.mul(trans);
-			camera.setTransform(t);
-			Transform3D objectTrans = new Transform3D();
-			objectTrans.setTranslation(new Vector3d(width, height,
-					0.0f));
-			tgroup.setTransform(objectTrans);
-			try
+			while ((s = in.readLine()) != null)
 			{
-				Thread.sleep(200);
+				String[] points = s.split(",");
+				x = Float.parseFloat(points[0]);
+				y = Float.parseFloat(points[1]);
+				z = Float.parseFloat(points[2]);
+				x /= 10.0;
+				y /= 10.0;
+				z /= 10.0;
+				Transform3D t = new Transform3D();
+				trans.setTranslation(new Vector3d(x, y, z + 15.0f));
+				t.mul(trans);
+				camera.setTransform(t);
+
+				Transform3D objectTrans = new Transform3D();
+				objectTrans.setTranslation(new Vector3d(x, y, z));
+				tgroup.setTransform(objectTrans);
+				try
+				{
+					Thread.sleep(200);
+				}
+				catch(InterruptedException e)
+				{
+					e.printStackTrace();
+				}
 			}
-			catch(InterruptedException e)
+		}
+		else
+		{
+			for(int i = 0; i < 2; i++)
 			{
-				e.printStackTrace();
+				Transform3D t = new Transform3D();
+				trans.setTranslation(new Vector3d(0.2, 0.2, 15.0f));
+				t.mul(trans);
+				camera.setTransform(t);
 			}
-			if(!launch && i < 5)
-				num+=2;
 		}
 	}
 
