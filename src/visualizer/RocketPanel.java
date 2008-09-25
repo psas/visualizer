@@ -18,14 +18,13 @@ public class RocketPanel extends JPanel
 	private final BranchGroup sceneBG;
 	private final BoundingSphere bounds;
 	private final TransformGroup tgroup = new TransformGroup();
-	private TransformGroup camera = new TransformGroup();
+	private final TransformGroup camera;
 
 	public RocketPanel()
 	{
 		sceneBG = new BranchGroup();
 		bounds = new BoundingSphere(new Point3d(0, 0, 0), 1000);
 		tgroup.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-		camera.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 		setLayout(new BorderLayout());
 		setOpaque(false);
 
@@ -36,7 +35,7 @@ public class RocketPanel extends JPanel
 			public void actionPerformed(ActionEvent ae)
 			{
 				try {
-					moveModel(true);
+					moveModel();
 				} catch(IOException e) {
 					e.printStackTrace();
 				}
@@ -60,11 +59,10 @@ public class RocketPanel extends JPanel
 		sceneBG.addChild(new GroundFloor());
 
 		su.addBranchGraph(sceneBG);
-		try {
-			moveModel(false);
-		} catch(IOException e) {
-			e.printStackTrace();
-		}
+
+		Transform3D trans = new Transform3D();
+		trans.setTranslation(new Vector3d(0.2, 0.2, 15.0f));
+		camera.setTransform(trans);
 	}
 
 	private void addGroundCover()
@@ -119,7 +117,7 @@ public class RocketPanel extends JPanel
 		sceneBG.addChild(bg);
 	}
 
-	private void moveModel(boolean launch) throws IOException
+	private void moveModel() throws IOException
 	{
 		Transform3D trans = new Transform3D();
 		float x = 0;
@@ -127,43 +125,28 @@ public class RocketPanel extends JPanel
 		float z = 0;
 		String s = "";
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-		if(launch)
+		while ((s = in.readLine()) != null)
 		{
-			while ((s = in.readLine()) != null)
-			{
-				String[] points = s.split(",");
-				x = Float.parseFloat(points[0]);
-				y = Float.parseFloat(points[1]);
-				z = Float.parseFloat(points[2]);
-				x /= 10.0;
-				y /= 10.0;
-				z /= 10.0;
-				Transform3D t = new Transform3D();
-				trans.setTranslation(new Vector3d(x, y, z + 15.0f));
-				t.mul(trans);
-				camera.setTransform(t);
+			String[] points = s.split(",");
+			x = Float.parseFloat(points[0]);
+			y = Float.parseFloat(points[1]);
+			z = Float.parseFloat(points[2]);
+			x /= 10.0;
+			y /= 10.0;
+			z /= 10.0;
+			trans.setTranslation(new Vector3d(x, y, z + 15.0f));
+			camera.setTransform(trans);
 
-				Transform3D objectTrans = new Transform3D();
-				objectTrans.setTranslation(new Vector3d(x, y, z));
-				tgroup.setTransform(objectTrans);
-				try
-				{
-					Thread.sleep(200);
-				}
-				catch(InterruptedException e)
-				{
-					e.printStackTrace();
-				}
-			}
-		}
-		else
-		{
-			for(int i = 0; i < 2; i++)
+			Transform3D objectTrans = new Transform3D();
+			objectTrans.setTranslation(new Vector3d(x, y, z));
+			tgroup.setTransform(objectTrans);
+			try
 			{
-				Transform3D t = new Transform3D();
-				trans.setTranslation(new Vector3d(0.2, 0.2, 15.0f));
-				t.mul(trans);
-				camera.setTransform(t);
+				Thread.sleep(200);
+			}
+			catch(InterruptedException e)
+			{
+				e.printStackTrace();
 			}
 		}
 	}
