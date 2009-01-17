@@ -55,7 +55,6 @@ public class RocketPanel extends JPanel
 		lightScene();
 		addModel();
 		addBackground();
-		addGroundCover();
 		sceneBG.addChild(new GroundFloor());
 
 		su.addBranchGraph(sceneBG);
@@ -63,30 +62,6 @@ public class RocketPanel extends JPanel
 		Transform3D trans = new Transform3D();
 		trans.setTranslation(new Vector3d(0.2, 0.2, 15.0f));
 		camera.setTransform(trans);
-	}
-
-	private void addGroundCover()
-	{
-		Transform3D t3d = new Transform3D();
-		t3d.set(new Vector3d(19, 0, -4));
-		TransformGroup tg1 = new TransformGroup(t3d);
-		tg1.addChild(new GroundCover(RESOURCE_DIR + "tree1.gif", 3));
-		sceneBG.addChild(tg1);
-
-		t3d.set(new Vector3d(-3, 0, 0));
-		TransformGroup tg2 = new TransformGroup(t3d);
-		tg2.addChild(new GroundCover(RESOURCE_DIR + "tree2.gif", 2));
-		sceneBG.addChild(tg2);
-
-		t3d.set(new Vector3d(2, 0, -6));
-		TransformGroup tg3 = new TransformGroup(t3d);
-		tg3.addChild(new GroundCover(RESOURCE_DIR + "tree4.gif", 3));
-		sceneBG.addChild(tg3);
-
-		t3d.set(new Vector3d(-1, 0, -4));
-		TransformGroup tg4 = new TransformGroup(t3d);
-		tg4.addChild(new GroundCover(RESOURCE_DIR + "cactus.gif"));
-		sceneBG.addChild(tg4);
 	}
 
 	private void addBackground()
