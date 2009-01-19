@@ -11,7 +11,7 @@ import com.sun.j3d.loaders.objectfile.*;
 
 public class ModelLoader
 {
-	private static final double MAX_SIZE = 5.0;
+	private static final double MAX_SIZE = 1.0;
 	private ObjectFile objFileloader;
 
 	public ModelLoader()
@@ -29,7 +29,6 @@ public class ModelLoader
 
 		Transform3D t3d = new Transform3D();
 		t3d.setScale(scaleFactor);
-		t3d.setTranslation(new Vector3d(0, 0, 0));
 
 		TransformGroup tg = new TransformGroup(t3d);
 		tg.addChild(modelBG);
