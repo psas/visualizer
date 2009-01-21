@@ -97,25 +97,10 @@ public class Visualizer extends JFrame
 		sceneBG.compile();
 		initTerrain(sceneBG);
 //End TeVi code
-		/*InputMap imap = rocketPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-		imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "launch");
-		ActionMap amap = rocketPanel.getActionMap();
-		amap.put("launch", new AbstractAction() {
-			public void actionPerformed(ActionEvent ae)
-			{
-				try {
-					moveModel();
-				} catch(IOException e) {
-					e.printStackTrace();
-				}
-			}
-		});*/
-
 		add(rocketPanel);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		pack();
 		setVisible(true);
-		//setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
 	}
 //Begin TeVi code
 	private void loadHeightData(String hFile)
@@ -310,13 +295,6 @@ public class Visualizer extends JFrame
 		tg4.addChild(ml.getModel(RESOURCE_DIR + "tintin_rocket.obj"));
 		tgroup.addChild(tg4);
 		sceneBG.addChild(tgroup);
-		/*Alpha alpha = new Alpha(-1, 2000);
-		PositionInterpolator poi = new PositionInterpolator(alpha, tgroup);
-		Transform3D axisTrans = new Transform3D();
-		axisTrans.rotZ(Math.PI/2.0d);
-		poi.setTransformAxis(axisTrans);
-		poi.setSchedulingBounds(new BoundingSphere());
-		sceneBG.addChild(poi);*/
 	}
 
 	public static void main(String[] args)
