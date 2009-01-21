@@ -120,35 +120,32 @@ public class TKeyBehavior extends Behavior
 		else if (keycode == WIRE_F) {	TheTerrain.setFilledPolys(true); }
 		else if (keycode == LAUNCH)
 		{
+			final Transform3D trans = new Transform3D();
+			final Transform3D objectTrans = new Transform3D();
+			Transform3D first = new Transform3D();
+			TheCamera.getTransform(first);
+			final Vector3d vec = new Vector3d();
+			first.get(vec);
+			final BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 			SwingUtilities.invokeLater(new Runnable()
 			{
 				public void run()
 				{
-					Transform3D trans = new Transform3D();
-					Transform3D objectTrans = new Transform3D();
-					float x = 0;
-					float y = 0;
-					float z = 0;
-					Transform3D first = new Transform3D();
-					TheCamera.getTransform(first);
-					Vector3d vec = new Vector3d();
-					first.get(vec);
-					float lx = (float) vec.x;
-					float ly = (float) vec.y;
-					float lz = (float) vec.z;
-					String s = "";
-					BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 					try
 					{
-						while ((s = in.readLine()) != null)
+						String s = in.readLine();
+						if(s != null)
 						{
 							String[] points = s.split(",");
-							x = Float.parseFloat(points[0]);
-							y = Float.parseFloat(points[1]);
-							z = Float.parseFloat(points[2]);
+							float x = Float.parseFloat(points[0]);
+							float y = Float.parseFloat(points[1]);
+							float z = Float.parseFloat(points[2]);
 							x /= 10.0;
 							y /= 10.0;
 							z /= 10.0;
+							float lx = (float) vec.x;
+							float ly = (float) vec.y;
+							float lz = (float) vec.z;
 							trans.setTranslation(new Vector3d(lx + x, ly + y, lz + z));
 							TheCamera.setTransform(trans);
 
@@ -156,6 +153,7 @@ public class TKeyBehavior extends Behavior
 							objectTrans.setTranslation(new Vector3d(x, y, z));
 							TheRocket.setTransform(objectTrans);
 							Thread.sleep(100);
+							SwingUtilities.invokeLater(this);
 						}
 					} catch (Exception e)
 					{
