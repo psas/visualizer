@@ -13,8 +13,11 @@ import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Enumeration;
+import java.util.TimerTask;
+
 import javax.media.j3d.*;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.vecmath.Vector3d;
 
 public class TKeyBehavior extends Behavior
@@ -127,9 +130,11 @@ public class TKeyBehavior extends Behavior
 			final Vector3d vec = new Vector3d();
 			first.get(vec);
 			final BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-			SwingUtilities.invokeLater(new Runnable()
+			final Timer t = new Timer(100, null);
+			t.setRepeats(false);
+			t.addActionListener(new ActionListener()
 			{
-				public void run()
+				public void actionPerformed(ActionEvent ae)
 				{
 					try
 					{
@@ -152,8 +157,7 @@ public class TKeyBehavior extends Behavior
 							TheRocket.getTransform(objectTrans);
 							objectTrans.setTranslation(new Vector3d(x, y, z));
 							TheRocket.setTransform(objectTrans);
-							Thread.sleep(100);
-							SwingUtilities.invokeLater(this);
+							t.restart();
 						}
 					} catch (Exception e)
 					{
@@ -161,6 +165,7 @@ public class TKeyBehavior extends Behavior
 					}
 				}
 			});
+			t.start();
 		}
 	}
 
