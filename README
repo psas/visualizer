@@ -2,7 +2,7 @@ PSAS Rocket Visualizer
 
 This project creates and runs a 3D simulator of a rocket.
 
-Note: This program requires Java and Java 3D to be installed on your 
+Note: This program requires Java and Java 3D to be installed on your
 computer.
 
 ------------------------------------------------------------------------
@@ -19,23 +19,23 @@ How to Run the program.
 
 `./run' should do the trick.
 
-For more detailed instructions on how to individually compile, jar and 
+For more detailed instructions on how to individually compile, jar and
 run the program use `./run --help'
 
 ------------------------------------------------------------------------
 
 Description of Files
 
-1. build -- The directory containing the class files. This is created by 
+1. build -- The directory containing the class files. This is created by
 the run script.
 2. manifest -- This is the manifest for the jar that we create.
 3. README -- This README
 4. readme.txt -- The README that came with the code we used.
-5. resource -- The Directory containing the background images and the 
+5. resource -- The Directory containing the background images and the
 rocket.
 6. run -- A sh script which will compile, jar and run the program.
 7. src -- The directory which contains the Java source files.
-8. todo -- A list of projects that are being worked on and should be 
+8. todo -- A list of projects that are being worked on and should be
 worked on.
 9. visualizer.jar -- The jar file created by the run script.
 
