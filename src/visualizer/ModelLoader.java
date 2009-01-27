@@ -1,7 +1,6 @@
 package visualizer;
 
 import java.io.*;
-import java.net.*;
 
 import javax.media.j3d.*;
 import javax.vecmath.*;
@@ -12,34 +11,10 @@ import com.sun.j3d.loaders.objectfile.*;
 public class ModelLoader
 {
 	private static final double MAX_SIZE = 1.0;
-	private ObjectFile objFileloader;
-
-	public ModelLoader()
-	{
-		objFileloader = new ObjectFile();
-	}
 
 	public TransformGroup getModel(String fnm)
 	{
-		BranchGroup modelBG = loadModel(fnm);
-		if(modelBG == null)
-			return null;
-
-		double scaleFactor = getScaling(modelBG);
-
-		Transform3D t3d = new Transform3D();
-		t3d.setScale(scaleFactor);
-
-		TransformGroup tg = new TransformGroup(t3d);
-		tg.addChild(modelBG);
-		return tg;
-	}
-
-	private BranchGroup loadModel(String fnm)
-	{
-
 		File file = new java.io.File(fnm);
-		URL url = null;
 		Scene scene = null;
 		try
 		{
@@ -47,16 +22,21 @@ public class ModelLoader
 			{
 				throw new FileNotFoundException(fnm);
 			}
-			url = file.toURI().toURL();
-			scene = objFileloader.load(url);
-		}
-		catch(Exception e)
+			scene = new ObjectFile().load(file.toURI().toURL());
+		} catch (Exception e)
 		{
 			e.printStackTrace();
 			return null;
 		}
+		BranchGroup modelBG = scene.getSceneGroup();
+		if(modelBG == null)
+			return null;
 
-		return scene.getSceneGroup();
+		Transform3D t3d = new Transform3D();
+		t3d.setScale(getScaling(modelBG));
+		TransformGroup tg = new TransformGroup(t3d);
+		tg.addChild(modelBG);
+		return tg;
 	}
 
 	private double getScaling(BranchGroup modelBG)
@@ -66,23 +46,9 @@ public class ModelLoader
 
 		Point3d lower = new Point3d();
 		boundBox.getLower(lower);
-
 		Point3d upper = new Point3d();
 		boundBox.getUpper(upper);
 
-		double maxDim = getMaxDimension(lower, upper);
-		if(maxDim > MAX_SIZE)
-		{
-			scaleFactor = MAX_SIZE / maxDim;
-			System.out.println("Applying scaling factor: "
-					+ scaleFactor);
-		}
-
-		return scaleFactor;
-	}
-
-	private double getMaxDimension(Point3d lower, Point3d upper)
-	{
 		double max = 0;
 		if((upper.x - lower.x) > max)
 			max = upper.x - lower.x;
@@ -90,6 +56,11 @@ public class ModelLoader
 			max = upper.y - lower.y;
 		if((upper.z - lower.z) > max)
 			max = upper.z - lower.z;
-		return max;
+		if(max > MAX_SIZE)
+		{
+			scaleFactor = MAX_SIZE / max;
+			System.out.println("Applying scaling factor: " + scaleFactor);
+		}
+		return scaleFactor;
 	}
 }

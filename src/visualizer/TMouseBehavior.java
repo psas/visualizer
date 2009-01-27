@@ -20,21 +20,14 @@ public class TMouseBehavior extends Behavior
 	private final Vector3d NULL_VECT = new Vector3d();
 
 	private TransformGroup ViewTG = null; // TG to be modified
-
 	private WakeupCriterion[] MouseEvents = new WakeupCriterion[4];
-
 	private WakeupOr MouseCriterion;
-
 	private Transform3D ViewT3D = new Transform3D(); // view transform
 	private Transform3D TransformX = new Transform3D(); // x-axis multiplier
 	private Transform3D TransformY = new Transform3D(); // y-axis multiplier
-
 	private Vector3d VectBak = new Vector3d(); // save translation
-
 	private int XLast = -1, YLast = -1; // keep track of movement
-
 	private float Factor = 0.008f; // specifies x- and y-dir.
-
 	private boolean ForceT3DRead = true; // view dir. changed externally
 	private boolean Invert = false; // invert mouse up/down
 
@@ -52,7 +45,6 @@ public class TMouseBehavior extends Behavior
 
 	public void initialize()
 	{
-
 		MouseEvents[0] = new WakeupOnAWTEvent(MouseEvent.MOUSE_DRAGGED);
 		MouseEvents[1] = new WakeupOnAWTEvent(MouseEvent.MOUSE_MOVED);
 		MouseEvents[2] = new WakeupOnAWTEvent(MouseEvent.MOUSE_PRESSED);
@@ -64,41 +56,30 @@ public class TMouseBehavior extends Behavior
 
 	public void processStimulus(Enumeration criteria)
 	{
-
 		WakeupCriterion wakeup;
-
 		AWTEvent[] events;
 		MouseEvent evt;
-
 		while (criteria.hasMoreElements())
 		{
-
 			wakeup = (WakeupCriterion) criteria.nextElement();
-
 			if (wakeup instanceof WakeupOnAWTEvent)
 			{
-
 				events = ((WakeupOnAWTEvent) wakeup).getAWTEvent();
-
 				if (events.length > 0)
 				{
-
 					evt = (MouseEvent) events[events.length - 1];
 					doProcess(evt);
 				}
 			}
 		}
-
 		wakeupOn(MouseCriterion);
 	}
 
 	private void doProcess(MouseEvent evt)
 	{
 		int id = evt.getID();
-
 		if ((ViewTG != null) && (id == MouseEvent.MOUSE_DRAGGED))
 		{
-
 			// --- get coordinates -----------------
 
 			int x = evt.getX();
@@ -157,14 +138,12 @@ public class TMouseBehavior extends Behavior
 
 	public void getDir(Vector3f v3f)
 	{
-
 		if (ForceT3DRead)
 		{
 
 			ViewTG.getTransform(ViewT3D);
 			ForceT3DRead = false;
 		}
-
 		ViewT3D.transform(STD_DIR, v3f);
 	}
 

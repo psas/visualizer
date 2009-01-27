@@ -13,10 +13,8 @@ import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Enumeration;
-import java.util.TimerTask;
 
 import javax.media.j3d.*;
-import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.vecmath.Vector3d;
 
@@ -176,9 +174,7 @@ public class TKeyBehavior extends Behavior
 			Reset = false;
 			return true;
 		} else
-		{
 			return false;
-		}
 	}
 
 	public boolean isInvertDemanded()
@@ -188,23 +184,10 @@ public class TKeyBehavior extends Behavior
 			Invert = false;
 			return true;
 		} else
-		{
 			return false;
-		}
 	}
 
-	public boolean isPilot()
-	{
-		return Pilot;
-	}
-
-	public float getSpeed()
-	{
-		return Speed;
-	}
-
-	public float getStrafe()
-	{
-		return Strafe;
-	}
+	public boolean isPilot() {	return Pilot;	}
+	public float getSpeed() {	return Speed;	}
+	public float getStrafe() {	return Strafe;	}
 }

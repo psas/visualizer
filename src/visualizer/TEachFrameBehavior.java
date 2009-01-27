@@ -7,7 +7,6 @@ package visualizer;
  *      Studienarbeit at the University of Stuttgart, VIS group
  */
 
-
 import java.util.Enumeration;
 import javax.media.j3d.*;
 import javax.vecmath.*;

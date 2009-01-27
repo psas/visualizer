@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.PixelGrabber;
 import java.io.*;
@@ -24,22 +23,8 @@ public class Visualizer extends JFrame
 	private static final String RESOURCE_DIR = "resource/";
 	private static final String HeightFile = RESOURCE_DIR + "Default_HeightMap.png";
 	private static final String TextureFile = RESOURCE_DIR + "Default_TexMap.png";
-	private final BranchGroup sceneBG;
-	private final BoundingSphere bounds;
-	private final TransformGroup tgroup = new TransformGroup();
-	private final TransformGroup camera;
-	private BufferedImage LoadImage = null;
-	private Texture2D tex = null;
-	
-	private int[] HeightMap;
-	private int Width;
-	
-	private SimpleUniverse SimpleU = null;
-	private BranchGroup ObjRoot = null;
-	private BranchGroup NavRoot = null;
-	private BoundingLeaf AlwaysOnBoundingLeaf = null;
-	
-	private TMouseBehavior MouseBeh;
+	private static final String BackgroundFile = RESOURCE_DIR + "clouds.jpg";
+	private final SimpleUniverse su;
 
 	public Visualizer()
 	{
@@ -47,79 +32,52 @@ public class Visualizer extends JFrame
 
 		JPanel rocketPanel = new JPanel();
 		rocketPanel.setLayout(new BorderLayout());
-		sceneBG = new BranchGroup();
-		bounds = new BoundingSphere(new Point3d(0, 0, 0), 1000);
-		tgroup.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 
-		addModel();
-		lightScene();
-//Begin TeVi code
+		BranchGroup sceneBG = new BranchGroup();
+		TransformGroup rocket = createRocket(sceneBG);
+		// Begin TeVi code
 		GraphicsConfigTemplate3D gctTmpl = new GraphicsConfigTemplate3D();
-		GraphicsEnvironment gEnv = GraphicsEnvironment
-				.getLocalGraphicsEnvironment();
+		GraphicsEnvironment gEnv = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice gDevice = gEnv.getDefaultScreenDevice();
-		GraphicsConfiguration gConfig = gDevice
-				.getBestConfiguration(gctTmpl);
+		GraphicsConfiguration gConfig = gDevice.getBestConfiguration(gctTmpl);
 		Canvas3D canvas3D = new Canvas3D(gConfig);
-		
+
 		canvas3D.setSize(512, 512);
 		canvas3D.setStereoEnable(true);
 		rocketPanel.add("Center", canvas3D);
-		
-		SimpleU = new SimpleUniverse(canvas3D);
-		ObjRoot = new BranchGroup();
-		NavRoot = new BranchGroup();
+
+		su = new SimpleUniverse(canvas3D);
+		BranchGroup ObjRoot = new BranchGroup();
+		BranchGroup NavRoot = new BranchGroup();
 
 		ObjRoot.setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
 		ObjRoot.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
 		NavRoot.setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
 		NavRoot.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
-		SimpleU.addBranchGraph(ObjRoot);
-		SimpleU.addBranchGraph(NavRoot);
-		
-		AlwaysOnBoundingLeaf = new BoundingLeaf(new BoundingSphere(
-				new Point3d(), 100000));
-		PlatformGeometry platformGeom = new PlatformGeometry();
+		su.addBranchGraph(ObjRoot);
+		su.addBranchGraph(NavRoot);
 
+		BoundingLeaf AlwaysOnBoundingLeaf = new BoundingLeaf(new BoundingSphere(new Point3d(), 100000));
+		PlatformGeometry platformGeom = new PlatformGeometry();
 		platformGeom.addChild(AlwaysOnBoundingLeaf);
 		platformGeom.compile();
+		su.getViewingPlatform().setPlatformGeometry(platformGeom);
 
-		SimpleU.getViewingPlatform().setPlatformGeometry(platformGeom);
-		
-		BranchGroup mbg = new BranchGroup();
-		MouseBeh = new TMouseBehavior();
-
-		MouseBeh.setSchedulingBoundingLeaf(AlwaysOnBoundingLeaf);
-		mbg.addChild(MouseBeh);
-		NavRoot.addChild(mbg);
-
-		camera = SimpleU.getViewingPlatform().getViewPlatformTransform();
-		sceneBG.compile();
-		initTerrain(sceneBG);
-//End TeVi code
-		add(rocketPanel);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		pack();
-		setVisible(true);
-	}
-//Begin TeVi code
-	private void loadHeightData(String hFile)
-	{
-		TextureLoader texLoader = null;
-		ImageComponent2D ic2d = null;
-
+		BufferedImage HeightImage = null;
+		BufferedImage TextureImage = null;
 		try
 		{
-			LoadImage = ImageIO.read(new File(hFile));
+			HeightImage = ImageIO.read(new File(HeightFile));
+			TextureImage = ImageIO.read(new File(TextureFile));
 		} catch (IOException e)
 		{
 			e.printStackTrace();
 		}
-		texLoader = new TextureLoader(LoadImage, this);
-		ic2d = texLoader.getImage();
 
-		int w = Math.min(ic2d.getWidth(), ic2d.getHeight());
+		ImageComponent2D heightIC = new TextureLoader(HeightImage, this).getImage();
+		int w = Math.min(heightIC.getWidth(), heightIC.getHeight());
 		int possibleW = 3; // 0, 3, 5, 9, 17, 33, 65, 129, 257, ...
+		int Width;
 		if (w < 3)
 			Width = 0;
 		while (w > possibleW)
@@ -130,176 +88,124 @@ public class Visualizer extends JFrame
 			Width = possibleW;
 		else
 			Width = (possibleW + 1) / 2;
-	}
 
-	private void grabPixels(Image img, int x, int y, int w, int h,
-			int[] pix, int off, int scansize)
-	{
-
-		PixelGrabber pg = new PixelGrabber(img, x, y, w, h, pix, off,
-				scansize);
-
+		int[] HeightMap = new int[Width * Width];
 		try
 		{
-			pg.grabPixels();
+			new PixelGrabber(HeightImage, 0, 0, Width, Width, HeightMap, 0, Width).grabPixels();
 		} catch (InterruptedException e)
 		{
-
-			System.err.println("interrupted waiting for pixels!");
+			e.printStackTrace();
 		}
-	}
-
-	private void initTerrain(BranchGroup sceneBG)
-	{
-		loadHeightData(HeightFile);
-
-		HeightMap = new int[Width * Width];
-
-		grabPixels(LoadImage, 0, 0, Width, Width, HeightMap, 0, Width);
-
 		for (int i = 0; i < HeightMap.length; i++)
 		{
 			HeightMap[i] &= 0xff;
 		}
 
-		TextureLoader texLoader = null;
-		ImageComponent2D ic2d = null;
-
-		try
-		{
-			LoadImage = ImageIO.read(new File(TextureFile));
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		texLoader = new TextureLoader(LoadImage, this);
-		ic2d = texLoader.getImage();
-		tex = new Texture2D(Texture.BASE_LEVEL,
-				Texture.RGB, ic2d.getWidth(), ic2d
-						.getHeight());
-
+		ImageComponent2D ic2d = new TextureLoader(TextureImage, this).getImage();
+		Texture2D tex = new Texture2D(Texture.BASE_LEVEL, Texture.RGB, ic2d.getWidth(), ic2d.getHeight());
 		tex.setImage(0, ic2d);
 		tex.setEnable(true);
 		tex.setMinFilter(Texture.NICEST);
 		tex.setMagFilter(Texture.NICEST);
 
-		BranchGroup scene = createSceneGraph(SimpleU, sceneBG);
-
-		ObjRoot.addChild(scene);
-
-		HeightMap = null;
-	}
-
-	private BranchGroup createSceneGraph(SimpleUniverse su, BranchGroup sceneBG)
-	{
 		BranchGroup terRoot = new BranchGroup();
 		Transform3D t3d = new Transform3D();
-		t3d.lookAt(new Point3d(15, 15, 15), new Point3d(),
-				new Vector3d(0, 1, 0));
+		t3d.lookAt(new Point3d(15, 15, 15), new Point3d(), new Vector3d(0, 1, 0));
 		t3d.invert();
+		TransformGroup camera = su.getViewingPlatform().getViewPlatformTransform();
 		camera.setTransform(t3d);
 
-		Terrain terrain = new Terrain(su, HeightMap, tex, 0.0f,
-				0.0f, 30.0f / (float) Width, 3.0f);
-
+		Terrain terrain = new Terrain(su, HeightMap, tex, 0.0f, 0.0f, 30.0f / (float) Width, 3.0f);
 		terRoot.addChild(terrain);
-		terRoot.addChild(getTheBackground());
+		terRoot.addChild(getTheBackground(AlwaysOnBoundingLeaf));
 		terRoot.addChild(sceneBG);
 
-		MouseBeh.init(camera, 0.008f, false);
-
-		BranchGroup kbg = new BranchGroup();
-		TKeyBehavior keyBeh = new TKeyBehavior(terrain, 0.5f, tgroup, camera);
-
+		TKeyBehavior keyBeh = new TKeyBehavior(terrain, 0.5f, rocket, camera);
 		keyBeh.setSchedulingBoundingLeaf(AlwaysOnBoundingLeaf);
+		BranchGroup kbg = new BranchGroup();
 		kbg.addChild(keyBeh);
 		NavRoot.addChild(kbg);
 
-		TEachFrameBehavior efBeh = new TEachFrameBehavior(terrain,
-				camera, keyBeh, MouseBeh);
+		TMouseBehavior MouseBeh = new TMouseBehavior();
+		MouseBeh.setSchedulingBoundingLeaf(AlwaysOnBoundingLeaf);
+		BranchGroup mbg = new BranchGroup();
+		mbg.addChild(MouseBeh);
+		NavRoot.addChild(mbg);
+		MouseBeh.init(camera, 0.008f, false);
 
+		TEachFrameBehavior efBeh = new TEachFrameBehavior(terrain, camera, keyBeh, MouseBeh);
 		efBeh.setSchedulingBoundingLeaf(AlwaysOnBoundingLeaf);
 		terRoot.addChild(efBeh);
 
 		terRoot.compile();
+		ObjRoot.addChild(terRoot);
 
-		return terRoot;
+		// End TeVi code
+		add(rocketPanel);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		pack();
+		setVisible(true);
 	}
-//End TeVi code
+
 	public void dispose()
 	{
-		SimpleU.removeAllLocales();
+		su.removeAllLocales();
 		super.dispose();
 		System.exit(0);
 	}
 
-	private Background getTheBackground()
+	private Background getTheBackground(BoundingLeaf leaf)
 	{
-		String fnm = RESOURCE_DIR + "clouds.jpg";
-		TextureLoader texLoader = new TextureLoader(fnm, null);
-		Texture2D texture = (Texture2D) texLoader.getTexture();
-		if(texture == null)
-			System.out.println("Cannot load texture from " + fnm);
+		Texture2D texture = (Texture2D) new TextureLoader(BackgroundFile, null).getTexture();
+		if (texture == null)
+			System.out.println("Cannot load texture from " + BackgroundFile);
 		else
-		{
-			System.out.println("Loaded texture from " + fnm);
 			texture.setEnable(true);
-		}
 
-		Sphere sphere = new Sphere(1.0f, Sphere.GENERATE_NORMALS_INWARD
-				| Sphere.GENERATE_TEXTURE_COORDS, 8);
+		Sphere sphere = new Sphere(1.0f, Sphere.GENERATE_NORMALS_INWARD | Sphere.GENERATE_TEXTURE_COORDS, 8);
 		Appearance backApp = sphere.getAppearance();
 		backApp.setTexture(texture);
 
+		Background bg = new Background();
+		bg.setApplicationBoundingLeaf(leaf);
 		BranchGroup backBG = new BranchGroup();
 		backBG.addChild(sphere);
-
-		Background bg = new Background();
-		bg.setApplicationBounds(bounds);
 		bg.setGeometry(backBG);
 
 		return bg;
 	}
 
-	private void lightScene()
+	private TransformGroup createRocket(BranchGroup scene)
 	{
-		Color3f white = new Color3f(1.0f, 1.0f, 1.0f);
-
-		AmbientLight ambientLightNode = new AmbientLight(white);
-		ambientLightNode.setInfluencingBounds(bounds);
-		sceneBG.addChild(ambientLightNode);
-
-		Vector3f light1Direction = new Vector3f(-1.0f, -1.0f, -1.0f);
-		Vector3f light2Direction = new Vector3f(1.0f, -1.0f, 1.0f);
-
-		DirectionalLight light1 = new DirectionalLight(white,
-				light1Direction);
-		light1.setInfluencingBounds(bounds);
-		sceneBG.addChild(light1);
-
-		DirectionalLight light2 = new DirectionalLight(white,
-		 		light2Direction);
-		light2.setInfluencingBounds(bounds);
-		sceneBG.addChild(light2);
-	}
-
-	private void addModel()
-	{
-		ModelLoader ml = new ModelLoader();
-
 		Transform3D t3d = new Transform3D();
 		t3d.setIdentity();
 		t3d.set(new Vector3d(0, 2.4, 0));
 
 		TransformGroup tg4 = new TransformGroup(t3d);
-		tg4.addChild(ml.getModel(RESOURCE_DIR + "tintin_rocket.obj"));
-		tgroup.addChild(tg4);
-		sceneBG.addChild(tgroup);
+		tg4.addChild(new ModelLoader().getModel(RESOURCE_DIR + "tintin_rocket.obj"));
+		TransformGroup rocket = new TransformGroup();
+		rocket.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+		rocket.addChild(tg4);
+		scene.addChild(rocket);
+
+		BoundingSphere bounds = new BoundingSphere(new Point3d(0, 0, 0), 1000);
+		Color3f white = new Color3f(1.0f, 1.0f, 1.0f);
+		DirectionalLight light1 = new DirectionalLight(white, new Vector3f(-1.0f, -1.0f, -1.0f));
+		light1.setInfluencingBounds(bounds);
+		scene.addChild(light1);
+
+		DirectionalLight light2 = new DirectionalLight(white, new Vector3f(1.0f, -1.0f, 1.0f));
+		light2.setInfluencingBounds(bounds);
+		scene.addChild(light2);
+
+		return rocket;
 	}
 
 	public static void main(String[] args)
 	{
-		SwingUtilities.invokeLater(new Runnable(){
+		SwingUtilities.invokeLater(new Runnable()
+		{
 			public void run()
 			{
 				new Visualizer();
