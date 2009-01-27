@@ -39,6 +39,7 @@ public class TKeyBehavior extends Behavior
 	private Terrain TheTerrain;
 	private final TransformGroup TheRocket;
 	private final TransformGroup TheCamera;
+	private final Timer t = new Timer(100, null);
 
 	private WakeupCondition KeyCriterion;
 
@@ -48,6 +49,7 @@ public class TKeyBehavior extends Behavior
 	private boolean Reset = false; // true, if view reset demanded
 	private boolean Invert = false; // true, if invert view demanded
 	private boolean Pilot = false; // use auto pilot?
+	private boolean Flying = false;
 
 	public TKeyBehavior(Terrain terrain, float speedInc, TransformGroup b, TransformGroup c)
 	{
@@ -128,12 +130,12 @@ public class TKeyBehavior extends Behavior
 			final Vector3d vec = new Vector3d();
 			first.get(vec);
 			final BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-			final Timer t = new Timer(100, null);
 			t.setRepeats(false);
 			t.addActionListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent ae)
 				{
+					Flying = true;
 					try
 					{
 						String s = in.readLine();
@@ -163,7 +165,13 @@ public class TKeyBehavior extends Behavior
 					}
 				}
 			});
-			t.start();
+			if(!Flying)
+				t.start();
+			else
+			{
+				t.stop();
+				Flying = false;
+			}
 		}
 	}
 
