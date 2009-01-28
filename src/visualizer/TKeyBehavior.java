@@ -14,7 +14,7 @@ import java.util.Enumeration;
 
 import javax.media.j3d.*;
 import javax.swing.Timer;
-import javax.vecmath.Vector3d;
+import javax.vecmath.*;
 
 public class TKeyBehavior extends Behavior
 {
@@ -151,10 +151,10 @@ public class TKeyBehavior extends Behavior
 							float lx = (float) vec.x;
 							float ly = (float) vec.y;
 							float lz = (float) vec.z;
-							trans.setTranslation(new Vector3d(lx + x, ly + y, lz + z));
+							trans.lookAt(new Point3d(lx + x, ly + y, lz + z), new Point3d(x, y ,z), new Vector3d(0, 1, 0));
+							trans.invert();
 							TheCamera.setTransform(trans);
 
-							TheRocket.getTransform(objectTrans);
 							objectTrans.setTranslation(new Vector3d(x, y, z));
 							TheRocket.setTransform(objectTrans);
 							i++;
