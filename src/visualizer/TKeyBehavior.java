@@ -131,39 +131,26 @@ public class TKeyBehavior extends Behavior
 			t.addActionListener(new ActionListener()
 			{
 				FlightPattern fp = new SpiralFlightPattern();
-				double[] xcoords = fp.getXCoords();
-				double[] ycoords = fp.getYCoords();
-				double[] zcoords = fp.getZCoords();
-				int i = 0;
+				long start = System.currentTimeMillis();
 				public void actionPerformed(ActionEvent ae)
 				{
 					Flying = true;
-					try
-					{
-						if(i < xcoords.length)
-						{
-							float x = (float) xcoords[i];
-							float y = (float) ycoords[i];
-							float z = (float) zcoords[i];
-							x /= 10.0;
-							y /= 10.0;
-							z /= 10.0;
-							float lx = (float) vec.x;
-							float ly = (float) vec.y;
-							float lz = (float) vec.z;
-							trans.lookAt(new Point3d(lx + x, ly + y, lz + z), new Point3d(x, y ,z), new Vector3d(0, 1, 0));
-							trans.invert();
-							TheCamera.setTransform(trans);
+					double[] points = fp.getNewCoords(start);
+					if(points == null)
+						return;
+					float x = (float) points[0];
+					float y = (float) points[1];
+					float z = (float) points[2];
+					float lx = (float) vec.x;
+					float ly = (float) vec.y;
+					float lz = (float) vec.z;
+					trans.lookAt(new Point3d(lx + x, ly + y, lz + z), new Point3d(x, y ,z), new Vector3d(0, 1, 0));
+					trans.invert();
+					TheCamera.setTransform(trans);
 
-							objectTrans.setTranslation(new Vector3d(x, y, z));
-							TheRocket.setTransform(objectTrans);
-							i++;
-							t.restart();
-						}
-					} catch (Exception e)
-					{
-						e.printStackTrace();
-					}
+					objectTrans.setTranslation(new Vector3d(x, y, z));
+					TheRocket.setTransform(objectTrans);
+					t.restart();
 				}
 			});
 			if(!Flying)
