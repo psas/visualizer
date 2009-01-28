@@ -10,8 +10,6 @@ package visualizer;
 
 import java.awt.AWTEvent;
 import java.awt.event.*;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.Enumeration;
 
 import javax.media.j3d.*;
@@ -129,22 +127,24 @@ public class TKeyBehavior extends Behavior
 			TheCamera.getTransform(first);
 			final Vector3d vec = new Vector3d();
 			first.get(vec);
-			final BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 			t.setRepeats(false);
 			t.addActionListener(new ActionListener()
 			{
+				FlightPattern fp = new SpiralFlightPattern();
+				double[] xcoords = fp.getXCoords();
+				double[] ycoords = fp.getYCoords();
+				double[] zcoords = fp.getZCoords();
+				int i = 0;
 				public void actionPerformed(ActionEvent ae)
 				{
 					Flying = true;
 					try
 					{
-						String s = in.readLine();
-						if(s != null)
+						if(i < xcoords.length)
 						{
-							String[] points = s.split(",");
-							float x = Float.parseFloat(points[0]);
-							float y = Float.parseFloat(points[1]);
-							float z = Float.parseFloat(points[2]);
+							float x = (float) xcoords[i];
+							float y = (float) ycoords[i];
+							float z = (float) zcoords[i];
 							x /= 10.0;
 							y /= 10.0;
 							z /= 10.0;
@@ -157,6 +157,7 @@ public class TKeyBehavior extends Behavior
 							TheRocket.getTransform(objectTrans);
 							objectTrans.setTranslation(new Vector3d(x, y, z));
 							TheRocket.setTransform(objectTrans);
+							i++;
 							t.restart();
 						}
 					} catch (Exception e)
