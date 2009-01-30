@@ -41,3 +41,12 @@ worked on.
 
 ------------------------------------------------------------------------
 
+How to add a Flight Pattern
+
+1. Create the Flight Pattern code in a class file which implements
+FlightPattern. For examples look at the already written patterns.
+2. Add a radio button in the visualizer around line 44. You need both a
+initialization and a set action command. Also up the numButtons variable
+one.
+3. In the TKeyBehaviour constructor add an else if for your action
+command and class name.

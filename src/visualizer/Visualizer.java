@@ -1,11 +1,8 @@
 package visualizer;
 
-import java.awt.BorderLayout;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.image.BufferedImage;
-import java.awt.image.PixelGrabber;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.image.*;
 import java.io.*;
 
 import javax.imageio.ImageIO;
@@ -15,8 +12,7 @@ import javax.vecmath.*;
 
 import com.sun.j3d.utils.geometry.Sphere;
 import com.sun.j3d.utils.image.TextureLoader;
-import com.sun.j3d.utils.universe.PlatformGeometry;
-import com.sun.j3d.utils.universe.SimpleUniverse;
+import com.sun.j3d.utils.universe.*;
 
 public class Visualizer extends JFrame
 {
@@ -24,12 +20,66 @@ public class Visualizer extends JFrame
 	private static final String HeightFile = RESOURCE_DIR + "Default_HeightMap.png";
 	private static final String TextureFile = RESOURCE_DIR + "Default_TexMap.png";
 	private static final String BackgroundFile = RESOURCE_DIR + "clouds.jpg";
-	private final SimpleUniverse su;
+	private SimpleUniverse su;
 
 	public Visualizer()
 	{
 		super("PSAS Rocket Visualizer");
+		final JDialog jd = new JDialog()
+		{
+			public void dispose()
+			{
+				super.dispose();
+				System.exit(0);
+			}
+		};
+		jd.setLayout(new FlowLayout());
+		jd.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		jd.setLocationRelativeTo(null);
+		jd.setTitle("PSAS Rocket Visualizer");
 
+		int numButtons = 2;
+		JRadioButton[] radioButtons = new JRadioButton[numButtons];
+		radioButtons[0] = new JRadioButton("Spiral");
+		radioButtons[0].setActionCommand("Spiral");
+		radioButtons[1] = new JRadioButton("Straight Line");
+		radioButtons[1].setActionCommand("Line");
+
+		JPanel settingsPanel = new JPanel();
+		settingsPanel.setLayout(new BoxLayout(settingsPanel, BoxLayout.PAGE_AXIS));
+		settingsPanel.add(new JLabel("Flight Pattern:"));
+		final ButtonGroup group = new ButtonGroup();
+		radioButtons[0].setSelected(true);
+		for (int i = 0; i < numButtons; i++) {
+			settingsPanel.add(radioButtons[i]);
+			group.add(radioButtons[i]);
+		}
+		settingsPanel.add(Box.createVerticalStrut(10));
+		settingsPanel.add(new JLabel("Render Delay Time"));
+		settingsPanel.add(Box.createVerticalStrut(10));
+		final JFormattedTextField timerField = new JFormattedTextField(new Integer(100));
+		settingsPanel.add(timerField);
+		settingsPanel.add(Box.createVerticalStrut(10));
+
+	        JPanel dialogPanel = new JPanel(new BorderLayout());
+	        dialogPanel.add(settingsPanel, BorderLayout.NORTH);
+	        dialogPanel.add(new JButton(new AbstractAction("OK")
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				jd.setVisible(false);
+				System.out.println(timerField.getValue().toString());
+				createRocketPanel(group.getSelection().getActionCommand(), Integer.parseInt(timerField.getValue().toString()));
+			}
+		}), BorderLayout.SOUTH);
+
+		jd.add(dialogPanel);
+		jd.setSize(jd.getPreferredSize().width + 50, jd.getPreferredSize().height + 50);
+		jd.setVisible(true);
+	}
+
+	public void createRocketPanel(String pattern, int delay)
+	{
 		JPanel rocketPanel = new JPanel();
 		rocketPanel.setLayout(new BorderLayout());
 
@@ -121,7 +171,7 @@ public class Visualizer extends JFrame
 		terRoot.addChild(getTheBackground(AlwaysOnBoundingLeaf));
 		terRoot.addChild(sceneBG);
 
-		TKeyBehavior keyBeh = new TKeyBehavior(terrain, 0.5f, rocket, camera);
+		TKeyBehavior keyBeh = new TKeyBehavior(terrain, 0.5f, rocket, camera, pattern, delay);
 		keyBeh.setSchedulingBoundingLeaf(AlwaysOnBoundingLeaf);
 		BranchGroup kbg = new BranchGroup();
 		kbg.addChild(keyBeh);
@@ -204,13 +254,7 @@ public class Visualizer extends JFrame
 
 	public static void main(String[] args)
 	{
-		SwingUtilities.invokeLater(new Runnable()
-		{
-			public void run()
-			{
-				new Visualizer();
-			}
-		});
+		new Visualizer();
 	}
 
 }

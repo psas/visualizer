@@ -35,9 +35,10 @@ public class TKeyBehavior extends Behavior
 	private static final int LAUNCH = KeyEvent.VK_ENTER;
 
 	private Terrain TheTerrain;
+	private FlightPattern fp = null;
 	private final TransformGroup TheRocket;
 	private final TransformGroup TheCamera;
-	private final Timer t = new Timer(100, null);
+	private final Timer t;
 
 	private WakeupCondition KeyCriterion;
 
@@ -49,12 +50,17 @@ public class TKeyBehavior extends Behavior
 	private boolean Pilot = false; // use auto pilot?
 	private boolean Flying = false;
 
-	public TKeyBehavior(Terrain terrain, float speedInc, TransformGroup b, TransformGroup c)
+	public TKeyBehavior(Terrain terrain, float speedInc, TransformGroup b, TransformGroup c, String pattern, int delay)
 	{
 		TheTerrain = terrain;
 		SpeedInc = speedInc;
 		TheRocket = b;
 		TheCamera = c;
+		t = new Timer(delay, null);
+		if(pattern.equals("Spiral"))
+			fp = new SpiralFlightPattern();
+		else
+			fp = new LineFlightPattern();
 	}
 
 	public void initialize()
@@ -130,7 +136,6 @@ public class TKeyBehavior extends Behavior
 			t.setRepeats(false);
 			t.addActionListener(new ActionListener()
 			{
-				FlightPattern fp = new SpiralFlightPattern();
 				long start = System.currentTimeMillis();
 				public void actionPerformed(ActionEvent ae)
 				{
