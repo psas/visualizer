@@ -2,3 +2,4 @@ build
 visualizer.jar
 .classpath
 .project
+bin/
