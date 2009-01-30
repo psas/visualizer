@@ -4,7 +4,7 @@ public class SpiralFlightPattern implements FlightPattern
 {
 	public double[] getNewCoords(long start)
 	{
-		int time = (int) ((System.currentTimeMillis()-start-99)/100);
+		int time = (int) ((System.currentTimeMillis()-start)/100);
 		double height = 120;
 		double radius = 50;
 		double segments = 8;

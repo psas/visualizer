@@ -68,7 +68,6 @@ public class Visualizer extends JFrame
 			public void actionPerformed(ActionEvent e)
 			{
 				jd.setVisible(false);
-				System.out.println(timerField.getValue().toString());
 				createRocketPanel(group.getSelection().getActionCommand(), Integer.parseInt(timerField.getValue().toString()));
 			}
 		}), BorderLayout.SOUTH);
