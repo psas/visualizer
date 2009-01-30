@@ -38,12 +38,14 @@ public class Visualizer extends JFrame
 		jd.setLocationRelativeTo(null);
 		jd.setTitle("PSAS Rocket Visualizer");
 
-		int numButtons = 2;
+		int numButtons = 3;
 		JRadioButton[] radioButtons = new JRadioButton[numButtons];
 		radioButtons[0] = new JRadioButton("Spiral");
 		radioButtons[0].setActionCommand("Spiral");
 		radioButtons[1] = new JRadioButton("Straight Line");
 		radioButtons[1].setActionCommand("Line");
+		radioButtons[2] = new JRadioButton("Arc");
+		radioButtons[2].setActionCommand("Arc");
 
 		JPanel settingsPanel = new JPanel();
 		settingsPanel.setLayout(new BoxLayout(settingsPanel, BoxLayout.PAGE_AXIS));

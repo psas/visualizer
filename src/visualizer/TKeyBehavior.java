@@ -59,6 +59,8 @@ public class TKeyBehavior extends Behavior
 		t = new Timer(delay, null);
 		if(pattern.equals("Spiral"))
 			fp = new SpiralFlightPattern();
+		else if(pattern.equals("Arc"))
+			fp = new ArcFlightPattern();
 		else
 			fp = new LineFlightPattern();
 	}
