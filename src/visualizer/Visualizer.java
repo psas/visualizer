@@ -158,6 +158,8 @@ public class Visualizer extends JFrame
 		tex.setMinFilter(Texture.NICEST);
 		tex.setMagFilter(Texture.NICEST);
 
+		View view = su.getViewer().getView();
+		view.setBackClipDistance(100);
 		BranchGroup terRoot = new BranchGroup();
 		Transform3D t3d = new Transform3D();
 		t3d.lookAt(new Point3d(15, 15, 15), new Point3d(), new Vector3d(0, 1, 0));
