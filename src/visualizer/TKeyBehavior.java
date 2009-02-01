@@ -36,9 +36,8 @@ public class TKeyBehavior extends Behavior
 
 	private Terrain TheTerrain;
 	private FlightPattern fp = null;
-	private final TransformGroup TheRocket;
-	private final TransformGroup TheCamera;
 	private final Timer t;
+	private final MoveRocket mr;
 
 	private WakeupCondition KeyCriterion;
 
@@ -50,12 +49,10 @@ public class TKeyBehavior extends Behavior
 	private boolean Pilot = false; // use auto pilot?
 	private boolean Flying = false;
 
-	public TKeyBehavior(Terrain terrain, float speedInc, TransformGroup b, TransformGroup c, String pattern, int delay)
+	public TKeyBehavior(Terrain terrain, float speedInc, TransformGroup rocket, TransformGroup camera, String pattern, int delay)
 	{
 		TheTerrain = terrain;
 		SpeedInc = speedInc;
-		TheRocket = b;
-		TheCamera = c;
 		t = new Timer(delay, null);
 		if(pattern.equals("Spiral"))
 			fp = new SpiralFlightPattern();
@@ -63,6 +60,7 @@ public class TKeyBehavior extends Behavior
 			fp = new ArcFlightPattern();
 		else
 			fp = new LineFlightPattern();
+		mr = new MoveRocket(camera, rocket, t, fp);
 	}
 
 	public void initialize()
@@ -129,42 +127,18 @@ public class TKeyBehavior extends Behavior
 		else if (keycode == WIRE_F) {	TheTerrain.setFilledPolys(true); }
 		else if (keycode == LAUNCH)
 		{
-			final Transform3D trans = new Transform3D();
-			final Transform3D objectTrans = new Transform3D();
-			Transform3D first = new Transform3D();
-			TheCamera.getTransform(first);
-			final Vector3d vec = new Vector3d();
-			first.get(vec);
 			t.setRepeats(false);
-			t.addActionListener(new ActionListener()
-			{
-				long start = System.currentTimeMillis();
-				public void actionPerformed(ActionEvent ae)
-				{
-					Flying = true;
-					double[] points = fp.getNewCoords(start);
-					if(points == null)
-						return;
-					float x = (float) points[0];
-					float y = (float) points[1];
-					float z = (float) points[2];
-					float lx = (float) vec.x;
-					float ly = (float) vec.y;
-					float lz = (float) vec.z;
-					trans.lookAt(new Point3d(lx + x, ly + y, lz + z), new Point3d(x, y ,z), new Vector3d(0, 1, 0));
-					trans.invert();
-					TheCamera.setTransform(trans);
-
-					objectTrans.setTranslation(new Vector3d(x, y, z));
-					TheRocket.setTransform(objectTrans);
-					t.restart();
-				}
-			});
+			t.addActionListener(mr);
 			if(!Flying)
+			{
+				mr.setStart(System.currentTimeMillis());
+				Flying = true;
 				t.start();
+			}
 			else
 			{
 				t.stop();
+				mr.setDiff(System.currentTimeMillis()-mr.getStart());
 				Flying = false;
 			}
 		}
