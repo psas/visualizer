@@ -7,7 +7,7 @@ public class LineFlightPattern implements FlightPattern
         {
                 double[] points = new double[]
                 {
-                        0, start/1000, 0
+                        0, start/(double) 1000, 0
                 };
                 return points;
         }
