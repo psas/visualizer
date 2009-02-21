@@ -20,6 +20,7 @@ public class Visualizer extends JFrame
 	private static final String HeightFile = RESOURCE_DIR + "Default_HeightMap.png";
 	private static final String TextureFile = RESOURCE_DIR + "Default_TexMap.png";
 	private static final String BackgroundFile = RESOURCE_DIR + "clouds.jpg";
+	private final JLabel speed = new JLabel("0");
 	private SimpleUniverse su;
 
 	public Visualizer()
@@ -51,17 +52,11 @@ public class Visualizer extends JFrame
 		settingsPanel.setLayout(new BoxLayout(settingsPanel, BoxLayout.PAGE_AXIS));
 		settingsPanel.add(new JLabel("Flight Pattern:"));
 		final ButtonGroup group = new ButtonGroup();
-		radioButtons[0].setSelected(true);
+		radioButtons[1].setSelected(true);
 		for (int i = 0; i < numButtons; i++) {
 			settingsPanel.add(radioButtons[i]);
 			group.add(radioButtons[i]);
 		}
-		settingsPanel.add(Box.createVerticalStrut(10));
-		settingsPanel.add(new JLabel("Speed"));
-		settingsPanel.add(new JLabel("Ex: 2 means the rocket moves twice as fast"));
-		settingsPanel.add(Box.createVerticalStrut(10));
-		final JFormattedTextField speedField = new JFormattedTextField(new Integer(1));
-		settingsPanel.add(speedField);
 		settingsPanel.add(Box.createVerticalStrut(10));
 		settingsPanel.add(new JLabel("Render Delay Time"));
 		settingsPanel.add(Box.createVerticalStrut(10));
@@ -76,9 +71,7 @@ public class Visualizer extends JFrame
 			public void actionPerformed(ActionEvent e)
 			{
 				jd.setVisible(false);
-				createRocketPanel(group.getSelection().getActionCommand(),
-						Integer.parseInt(timerField.getValue().toString()),
-						Integer.parseInt(speedField.getValue().toString()));
+				createRocketPanel(group.getSelection().getActionCommand(), Integer.parseInt(timerField.getValue().toString()));
 			}
 		}), BorderLayout.SOUTH);
 
@@ -87,7 +80,7 @@ public class Visualizer extends JFrame
 		jd.setVisible(true);
 	}
 
-	public void createRocketPanel(String pattern, int delay, int speed)
+	public void createRocketPanel(String pattern, int delay)
 	{
 		JPanel rocketPanel = new JPanel();
 		rocketPanel.setLayout(new BorderLayout());
@@ -182,7 +175,7 @@ public class Visualizer extends JFrame
 		terRoot.addChild(getTheBackground(AlwaysOnBoundingLeaf));
 		terRoot.addChild(sceneBG);
 
-		TKeyBehavior keyBeh = new TKeyBehavior(terrain, 0.5f, rocket, camera, pattern, delay, speed);
+		TKeyBehavior keyBeh = new TKeyBehavior(terrain, 0.5f, rocket, camera, pattern, delay, this);
 		keyBeh.setSchedulingBoundingLeaf(AlwaysOnBoundingLeaf);
 		BranchGroup kbg = new BranchGroup();
 		kbg.addChild(keyBeh);
@@ -204,6 +197,7 @@ public class Visualizer extends JFrame
 
 		// End TeVi code
 		add(rocketPanel);
+		add(speed, BorderLayout.SOUTH);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		pack();
 		setVisible(true);
@@ -215,6 +209,8 @@ public class Visualizer extends JFrame
 		super.dispose();
 		System.exit(0);
 	}
+
+	public void setSpeed(String msg)  {	speed.setText(msg);	}
 
 	private Background getTheBackground(BoundingLeaf leaf)
 	{

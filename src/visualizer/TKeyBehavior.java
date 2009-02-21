@@ -33,16 +33,21 @@ public class TKeyBehavior extends Behavior
 	private static final int MINUS = KeyEvent.VK_3;
 	private static final int PLUS = KeyEvent.VK_4;
 	private static final int LAUNCH = KeyEvent.VK_ENTER;
+	private static final int SPEED_INCREASE = KeyEvent.VK_X;
+	private static final int SPEED_DECREASE = KeyEvent.VK_Z;
 
 	private Terrain TheTerrain;
 	private FlightPattern fp = null;
 	private final Timer t;
 	private final TransformGroup TheRocket;
 	private final TransformGroup TheCamera;
+	private final Visualizer visualizer;
 
 	private WakeupCondition KeyCriterion;
 	long start = 0;
-	int speed = 1;
+	long stop = 0;
+	int speed = 0;
+	boolean initialized = false;
 
 	private float Speed = 0.0f; // current speed
 	private float Strafe = 0.0f; // strafing speed (left/right)
@@ -52,13 +57,14 @@ public class TKeyBehavior extends Behavior
 	private boolean Pilot = false; // use auto pilot?
 	private boolean Flying = false;
 
-	public TKeyBehavior(Terrain terrain, float speedInc, TransformGroup rocket, TransformGroup camera, String pattern, int delay, int speed)
+	public TKeyBehavior(Terrain terrain, float speedInc, TransformGroup rocket,
+			TransformGroup camera, String pattern, int delay, Visualizer visualizer)
 	{
 		TheTerrain = terrain;
 		SpeedInc = speedInc;
 		TheCamera = camera;
 		TheRocket = rocket;
-		this.speed = speed;
+		this.visualizer = visualizer;
 		t = new Timer(delay, null);
 		if(pattern.equals("Spiral"))
 			fp = new SpiralFlightPattern();
@@ -130,9 +136,28 @@ public class TKeyBehavior extends Behavior
 		else if (keycode == PLUS) {	TheTerrain.moreDetail(true);	}
 		else if (keycode == FILLED) {	TheTerrain.setFilledPolys(false); }
 		else if (keycode == WIRE_F) {	TheTerrain.setFilledPolys(true); }
+		else if (keycode == SPEED_INCREASE) {
+			if(!initialized)
+				return;
+			if(speed == -1)
+				stopRocket();
+			else if(speed == 0)
+				startRocket(1);
+			else
+				moveRocket(1);
+		}
+		else if (keycode == SPEED_DECREASE) {
+			if(!initialized)
+				return;
+			if(speed == 1)
+				stopRocket();
+			else if(speed == 0)
+				startRocket(-1);
+			else
+				moveRocket(-1);
+		}
 		else if (keycode == LAUNCH)
 		{
-			long stop = 0;
 			Transform3D first = new Transform3D();
 			TheCamera.getTransform(first);
 			final Vector3d vec = new Vector3d();
@@ -142,9 +167,13 @@ public class TKeyBehavior extends Behavior
 			{
 				public void actionPerformed(ActionEvent ae)
 				{
+					Flying = true;
 					double[] points = fp.getNewCoords((System.currentTimeMillis()-start)*speed);
 					if(points == null)
+					{
+						Flying = false;
 						return;
+					}
 					float x = (float) points[0];
 					float y = (float) points[1];
 					float z = (float) points[2];
@@ -162,19 +191,35 @@ public class TKeyBehavior extends Behavior
 					t.restart();
 				}
 			});
-			if(!Flying)
-			{
-				start += System.currentTimeMillis()-stop;
-				Flying = true;
-				t.start();
-			}
-			else
-			{
-				stop = System.currentTimeMillis();
-				t.stop();
-				Flying = false;
-			}
+			initialized = true;
 		}
+	}
+
+	private void moveRocket(int i)
+	{
+		int new_speed = speed + i;
+		start = System.currentTimeMillis() - (System.currentTimeMillis() - start) * speed / new_speed;
+		speed = new_speed;
+		visualizer.setSpeed(String.valueOf(speed));
+	}
+
+	private void stopRocket()
+	{
+		stop = System.currentTimeMillis();
+		t.stop();
+		speed = 0;
+		visualizer.setSpeed(String.valueOf(speed));
+		Flying = false;
+	}
+
+	private void startRocket(int i)
+	{
+		start += System.currentTimeMillis()-stop;
+		stop = 0;
+		start = System.currentTimeMillis() - (System.currentTimeMillis() - start) * speed / i;
+		speed = i;
+		t.start();
+		visualizer.setSpeed(String.valueOf(speed));
 	}
 
 	public boolean isResetDemanded()
