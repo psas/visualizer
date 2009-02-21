@@ -13,7 +13,7 @@ public class ArcFlightPattern implements FlightPattern
 	};
 	public double[] getNewCoords(long start)
 	{
-		double time = (System.currentTimeMillis()-start)/1000;
+		double time = start/1000;
 		velocity[1] += -.00981 * time / 10;
 		position[1] += velocity[1] * time / 10;
 		position[2] += velocity[2] * time / 10;

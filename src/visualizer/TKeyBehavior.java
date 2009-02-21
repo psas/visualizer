@@ -42,6 +42,7 @@ public class TKeyBehavior extends Behavior
 
 	private WakeupCondition KeyCriterion;
 	long start = 0;
+	int speed = 1;
 
 	private float Speed = 0.0f; // current speed
 	private float Strafe = 0.0f; // strafing speed (left/right)
@@ -51,12 +52,13 @@ public class TKeyBehavior extends Behavior
 	private boolean Pilot = false; // use auto pilot?
 	private boolean Flying = false;
 
-	public TKeyBehavior(Terrain terrain, float speedInc, TransformGroup rocket, TransformGroup camera, String pattern, int delay)
+	public TKeyBehavior(Terrain terrain, float speedInc, TransformGroup rocket, TransformGroup camera, String pattern, int delay, int speed)
 	{
 		TheTerrain = terrain;
 		SpeedInc = speedInc;
 		TheCamera = camera;
 		TheRocket = rocket;
+		this.speed = speed;
 		t = new Timer(delay, null);
 		if(pattern.equals("Spiral"))
 			fp = new SpiralFlightPattern();
@@ -140,7 +142,7 @@ public class TKeyBehavior extends Behavior
 			{
 				public void actionPerformed(ActionEvent ae)
 				{
-					double[] points = fp.getNewCoords(start);
+					double[] points = fp.getNewCoords((System.currentTimeMillis()-start)*speed);
 					if(points == null)
 						return;
 					float x = (float) points[0];

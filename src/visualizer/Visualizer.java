@@ -57,6 +57,12 @@ public class Visualizer extends JFrame
 			group.add(radioButtons[i]);
 		}
 		settingsPanel.add(Box.createVerticalStrut(10));
+		settingsPanel.add(new JLabel("Speed"));
+		settingsPanel.add(new JLabel("Ex: 2 means the rocket moves twice as fast"));
+		settingsPanel.add(Box.createVerticalStrut(10));
+		final JFormattedTextField speedField = new JFormattedTextField(new Integer(1));
+		settingsPanel.add(speedField);
+		settingsPanel.add(Box.createVerticalStrut(10));
 		settingsPanel.add(new JLabel("Render Delay Time"));
 		settingsPanel.add(Box.createVerticalStrut(10));
 		final JFormattedTextField timerField = new JFormattedTextField(new Integer(100));
@@ -70,7 +76,9 @@ public class Visualizer extends JFrame
 			public void actionPerformed(ActionEvent e)
 			{
 				jd.setVisible(false);
-				createRocketPanel(group.getSelection().getActionCommand(), Integer.parseInt(timerField.getValue().toString()));
+				createRocketPanel(group.getSelection().getActionCommand(),
+						Integer.parseInt(timerField.getValue().toString()),
+						Integer.parseInt(speedField.getValue().toString()));
 			}
 		}), BorderLayout.SOUTH);
 
@@ -79,7 +87,7 @@ public class Visualizer extends JFrame
 		jd.setVisible(true);
 	}
 
-	public void createRocketPanel(String pattern, int delay)
+	public void createRocketPanel(String pattern, int delay, int speed)
 	{
 		JPanel rocketPanel = new JPanel();
 		rocketPanel.setLayout(new BorderLayout());
@@ -174,7 +182,7 @@ public class Visualizer extends JFrame
 		terRoot.addChild(getTheBackground(AlwaysOnBoundingLeaf));
 		terRoot.addChild(sceneBG);
 
-		TKeyBehavior keyBeh = new TKeyBehavior(terrain, 0.5f, rocket, camera, pattern, delay);
+		TKeyBehavior keyBeh = new TKeyBehavior(terrain, 0.5f, rocket, camera, pattern, delay, speed);
 		keyBeh.setSchedulingBoundingLeaf(AlwaysOnBoundingLeaf);
 		BranchGroup kbg = new BranchGroup();
 		kbg.addChild(keyBeh);
