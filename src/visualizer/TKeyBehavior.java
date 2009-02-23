@@ -32,7 +32,6 @@ public class TKeyBehavior extends Behavior
 	private static final int WIRE_F = KeyEvent.VK_2;
 	private static final int MINUS = KeyEvent.VK_3;
 	private static final int PLUS = KeyEvent.VK_4;
-	private static final int LAUNCH = KeyEvent.VK_ENTER;
 	private static final int SPEED_INCREASE = KeyEvent.VK_X;
 	private static final int SPEED_DECREASE = KeyEvent.VK_Z;
 
