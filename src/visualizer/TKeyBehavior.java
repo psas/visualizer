@@ -46,7 +46,7 @@ public class TKeyBehavior extends Behavior
 	long start = 0;
 	long stop = 0;
 	int speed = 0;
-	int clock_speed = 0;
+	int old_speed = 0;
 	boolean clock = false;
 
 	private float Speed = 0.0f; // current speed
@@ -91,7 +91,7 @@ public class TKeyBehavior extends Behavior
 		{
 			public void actionPerformed(ActionEvent ae)
 			{
-				double[] points = fp.getNewCoords(((System.currentTimeMillis() - start) * clock_speed));
+				double[] points = fp.getNewCoords(((System.currentTimeMillis() - start) * speed));
 				if(points == null)
 					return;
 				float x = (float) points[0];
@@ -184,8 +184,7 @@ public class TKeyBehavior extends Behavior
 
 	private void moveRocket(int i)
 	{
-		start = System.currentTimeMillis() - (System.currentTimeMillis() - start) * clock_speed / (speed + i);
-		clock_speed += i;
+		start = System.currentTimeMillis() - (System.currentTimeMillis() - start) * speed / (speed + i);
 		speed += i;
 		visualizer.setSpeed(String.valueOf(speed));
 	}
@@ -194,6 +193,7 @@ public class TKeyBehavior extends Behavior
 	{
 		stop = System.currentTimeMillis();
 		t.stop();
+		old_speed = speed;
 		speed = 0;
 		visualizer.setSpeed(String.valueOf(speed));
 	}
@@ -205,8 +205,7 @@ public class TKeyBehavior extends Behavior
 			start += System.currentTimeMillis()-stop;
 			clock = true;
 		}
-		start = System.currentTimeMillis() - (System.currentTimeMillis() - start) * clock_speed / i;
-		clock_speed = i;
+		start = System.currentTimeMillis() - (System.currentTimeMillis() - start) * old_speed / i;
 		speed = i;
 		t.start();
 		visualizer.setSpeed(String.valueOf(speed));
