@@ -47,7 +47,6 @@ public class TKeyBehavior extends Behavior
 	long start = 0;
 	long stop = 0;
 	int speed = 0;
-	boolean initialized = false;
 
 	private float Speed = 0.0f; // current speed
 	private float Strafe = 0.0f; // strafing speed (left/right)
@@ -83,6 +82,39 @@ public class TKeyBehavior extends Behavior
 		KeyCriterion = new WakeupOr(keyEvents);
 
 		wakeupOn(KeyCriterion);
+		Transform3D first = new Transform3D();
+		TheCamera.getTransform(first);
+		final Vector3d vec = new Vector3d();
+		first.get(vec);
+		t.setRepeats(false);
+		t.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent ae)
+			{
+				Flying = true;
+				double[] points = fp.getNewCoords((System.currentTimeMillis()-start)*speed);
+				if(points == null)
+				{
+					Flying = false;
+					return;
+				}
+				float x = (float) points[0];
+				float y = (float) points[1];
+				float z = (float) points[2];
+				Transform3D trans = new Transform3D();
+				float lx = (float) vec.x;
+				float ly = (float) vec.y;
+				float lz = (float) vec.z;
+				trans.lookAt(new Point3d(lx + x, ly + y, lz + z), new Point3d(x, y, z), new Vector3d(0, 1, 0));
+				trans.invert();
+				TheCamera.setTransform(trans);
+
+				Transform3D objectTrans = new Transform3D();
+				objectTrans.setTranslation(new Vector3d(x, y, z));
+				TheRocket.setTransform(objectTrans);
+				t.restart();
+			}
+		});
 	}
 
 	public void processStimulus(Enumeration criteria)
@@ -137,8 +169,6 @@ public class TKeyBehavior extends Behavior
 		else if (keycode == FILLED) {	TheTerrain.setFilledPolys(false); }
 		else if (keycode == WIRE_F) {	TheTerrain.setFilledPolys(true); }
 		else if (keycode == SPEED_INCREASE) {
-			if(!initialized)
-				return;
 			if(speed == -1)
 				stopRocket();
 			else if(speed == 0)
@@ -147,51 +177,12 @@ public class TKeyBehavior extends Behavior
 				moveRocket(1);
 		}
 		else if (keycode == SPEED_DECREASE) {
-			if(!initialized)
-				return;
 			if(speed == 1)
 				stopRocket();
 			else if(speed == 0)
 				startRocket(-1);
 			else
 				moveRocket(-1);
-		}
-		else if (keycode == LAUNCH)
-		{
-			Transform3D first = new Transform3D();
-			TheCamera.getTransform(first);
-			final Vector3d vec = new Vector3d();
-			first.get(vec);
-			t.setRepeats(false);
-			t.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(ActionEvent ae)
-				{
-					Flying = true;
-					double[] points = fp.getNewCoords((System.currentTimeMillis()-start)*speed);
-					if(points == null)
-					{
-						Flying = false;
-						return;
-					}
-					float x = (float) points[0];
-					float y = (float) points[1];
-					float z = (float) points[2];
-					Transform3D trans = new Transform3D();
-					float lx = (float) vec.x;
-					float ly = (float) vec.y;
-					float lz = (float) vec.z;
-					trans.lookAt(new Point3d(lx + x, ly + y, lz + z), new Point3d(x, y, z), new Vector3d(0, 1, 0));
-					trans.invert();
-					TheCamera.setTransform(trans);
-
-					Transform3D objectTrans = new Transform3D();
-					objectTrans.setTranslation(new Vector3d(x, y, z));
-					TheRocket.setTransform(objectTrans);
-					t.restart();
-				}
-			});
-			initialized = true;
 		}
 	}
 
