@@ -41,11 +41,13 @@ public class TKeyBehavior extends Behavior
 	private final TransformGroup TheRocket;
 	private final TransformGroup TheCamera;
 	private final Visualizer visualizer;
+	private final Clock c = new Clock();
 
 	private WakeupCondition KeyCriterion;
 	long start = 0;
 	long stop = 0;
 	int speed = 0;
+	boolean clock = false;
 
 	private float Speed = 0.0f; // current speed
 	private float Strafe = 0.0f; // strafing speed (left/right)
@@ -53,7 +55,6 @@ public class TKeyBehavior extends Behavior
 	private boolean Reset = false; // true, if view reset demanded
 	private boolean Invert = false; // true, if invert view demanded
 	private boolean Pilot = false; // use auto pilot?
-	private boolean Flying = false;
 
 	public TKeyBehavior(Terrain terrain, float speedInc, TransformGroup rocket,
 			TransformGroup camera, String pattern, int delay, Visualizer visualizer)
@@ -90,13 +91,9 @@ public class TKeyBehavior extends Behavior
 		{
 			public void actionPerformed(ActionEvent ae)
 			{
-				Flying = true;
-				double[] points = fp.getNewCoords((System.currentTimeMillis()-start)*speed);
+				double[] points = fp.getNewCoords(c.getTime());
 				if(points == null)
-				{
-					Flying = false;
 					return;
-				}
 				float x = (float) points[0];
 				float y = (float) points[1];
 				float z = (float) points[2];
@@ -187,26 +184,27 @@ public class TKeyBehavior extends Behavior
 
 	private void moveRocket(int i)
 	{
-		int new_speed = speed + i;
-		start = System.currentTimeMillis() - (System.currentTimeMillis() - start) * speed / new_speed;
-		speed = new_speed;
+		c.setSpeed(speed + i);
+		speed = (speed + i);
 		visualizer.setSpeed(String.valueOf(speed));
 	}
 
 	private void stopRocket()
 	{
-		stop = System.currentTimeMillis();
+		c.stopClock();
 		t.stop();
 		speed = 0;
 		visualizer.setSpeed(String.valueOf(speed));
-		Flying = false;
 	}
 
 	private void startRocket(int i)
 	{
-		start += System.currentTimeMillis()-stop;
-		stop = 0;
-		start = System.currentTimeMillis() - (System.currentTimeMillis() - start) * speed / i;
+		if(!clock)
+		{
+			c.startClock();
+			clock = true;
+		}
+		c.setSpeed(i);
 		speed = i;
 		t.start();
 		visualizer.setSpeed(String.valueOf(speed));
